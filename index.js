@@ -1,20 +1,20 @@
-import CidadesHTMLReport from './src/CidadesHTMLReporter.js';
-import CidadesTXTReport from './src/CidadesTXTReporter.js';
+import sys from 'node:sys';
 
-const [cmd, filename, format] = process.argv;
+import FormaterHTML from './src/FormaterHTML.js';
+import FormaterTXT from './src/FormaterTXT.js';
+import CitiesReporter from './src/CitiesReporter.js';
 
+const [cmd, script, param1] = process.argv,
+      filename = './data/cidades-2.json';
 
-if (format === 'html') {
-  let reporter = new CidadesHTMLReport();
-  reporter.ler('./data/cidades-2.json');
-  reporter.parse();
-  let html = reporter.reportar();
-  console.log(html);
-}
-if (format === 'txt') {
-  let reporter = new CidadesTXTReport();
-  reporter.ler('./data/cidades-2.json');
-  reporter.parse();
-  let html = reporter.reportar();
-  console.log(html);
-}
+const formaterStrategies = {
+  'html': new FormaterHTML(),
+  'txt': new FormaterTXT()
+};
+
+let reporter = new CitiesReporter({
+      formaterStrategy: formaterStrategies[param1]
+    }),
+    output = reporter.report(filename);
+
+console.log(output);
