@@ -26,5 +26,4 @@ export default class FormaterHTML extends AbstractFormater {
 
     return html;
   }
-
 }

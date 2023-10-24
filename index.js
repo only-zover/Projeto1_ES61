@@ -1,27 +1,33 @@
-import sys from 'node:sys';
-
+import fs from 'node:fs';
+import CompositeFormater from './src/CompositeFormater.js'
 import FormaterHTML from './src/FormaterHTML.js';
 import FormaterTXT from './src/FormaterTXT.js';
 import CitiesReporter from './src/CitiesReporter.js';
-import Leaf from './src/composite/File.js';
 
-const [cmd, script, param1] = process.argv,
-      filename = './data/cidades-2.json';
+// Create formatter instances
+const htmlFormatter = new FormaterHTML();
+const txtFormatter = new FormaterTXT();
 
+// Create a composite formatter and add the individual formatters
+const compositeFormatter = new CompositeFormater();
+compositeFormatter.addFormatter(htmlFormatter);
+compositeFormatter.addFormatter(txtFormatter);
+
+// Define a mapping between param1 values and formatter instances
 const formaterStrategies = {
-  'html': new FormaterHTML(),
-  'txt': new FormaterTXT()
+  html: htmlFormatter,
+  txt: txtFormatter,
+  composite: compositeFormatter, // Optionally, you can add more formatter options here
 };
 
-let reporter = new CitiesReporter({formaterStrategy: formaterStrategies[param1]}),
-    output = reporter.report(filename),
-    reporter2 = new CitiesReporter({formaterStrategy: formaterStrategies[param1]}),
-    output2 = reporter2.report(filename)
+const [cmd, script, param1] = process.argv;
+const filename = './data/cidades-2.json';
 
-//console.log(output);
-console.log(output2)
-// let l = new Leaf()
+if (!formaterStrategies[param1]) {
+  console.error('Invalid param1 value. Supported values are: html, txt, composite');
+  process.exit(1);
+}
 
-// l.data = "teste"
-
-// console.log(l.data)
+let reporter = new CitiesReporter({ formaterStrategy: formaterStrategies[param1] });
+let output = reporter.report(filename);
+console.log(output);
